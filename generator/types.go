@@ -687,6 +687,11 @@ func (t *typeResolver) ResolveSchema(schema *spec.Schema, isAnonymous, isRequire
 		return
 	}
 
+	if schema.Type.Contains("string") && (schema.Format == "uint64" || schema.Format == "int64") {
+		_ = schema.Typed("integer", schema.Format)
+		schema.AddExtension(xGoJSONString, struct{}{})
+	}
+
 	extType, isExternalType := hasExternalType(schema.Extensions)
 	if isExternalType {
 		tpe, pkg, alias := knownDefGoType(t.ModelName, *schema, t.goTypeName)
